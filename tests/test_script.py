@@ -46,5 +46,5 @@ def test_multiple_cases():
 
 def test_with_list():
     for address_text in list_addresses:
-        parse_single_address(address_text)
+        parse_single_address(address_text, True)
     assert True

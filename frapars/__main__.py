@@ -48,6 +48,8 @@ def parse(addresses_str, verbose=False):
 
 
 def parse_single_address(address_str, verbose=False):
+    if verbose:
+        print(f"Initial address is: {address_str}")
     addr_details = {}
     norm_address = clean_str.normalize_text(address_str)
 

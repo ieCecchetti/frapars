@@ -17,6 +17,22 @@ Execute simply the script by
 python script.py
 ```
 
+# Example
+An example of the parser can be resumed here with this log:
+```text
+Initial address is: 100 Rue Chapelle
+Result is: 100 Rue Chapelle 
+Details: {'urba_names': ['rue'], 'prepositions': [], 'city': [], 'addres_num': ['100'], 'department': [], 'street_name': ['chapelle']}
+Unparsed string remained is: 
+Parse quality scored: 1.0
+-------------------------------------------
+Initial address is: 100 Rue Colombes (De)
+Result is: 100 Rue De Colombes 
+Details: {'urba_names': ['rue'], 'prepositions': ['de'], 'city': ['colombes'], 'addres_num': ['100'], 'department': [], 'street_name': []}
+Unparsed string remained is: 
+Parse quality scored: 1.0
+```
+
 # To-Do List
 - [ ] Publish in git
 - [ ] Clean structure (use maybe poetry)
