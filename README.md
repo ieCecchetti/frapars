@@ -85,6 +85,7 @@ Process has finished!
 with the command:
 
 `poetry run script -i "poetry run script -i "your/file/path/filename.csv"`
+```
 Fra-parse 0.2.0
 Developed by eCecchetti
 Found 234253 addresses to parse
@@ -92,6 +93,7 @@ Processing: 100%|█████████████████████
 Storing into file the results
 Result printed at:  frapars/res/parsed_addresses.csv
 Process has finished!
+```
 
 
 ## To-Do List
