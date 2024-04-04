@@ -1,23 +1,41 @@
 # FRA-P-RS (Franc-parse-addresses)
 Simple script that permits to parse addresses in France format.
 
-# Install
+## Install
 To install, from the main proj folder, follows this steps:
+1. Visit the Poetry website to download the installer for your operating system.
+2. Run the installer according to the instructions provided for your operating system.
+3. After installation, verify that Poetry is installed correctly by opening a terminal or command prompt and typing:
+```
+poetry --version
+```
+This command should display the installed version of Poetry.
+For more detailed installation instructions and usage guidelines, refer to the Poetry documentation.
+
+Then for installing the project:
 ```bash
+# in case you are using vscode: this will make vsCode recognise and create the .venv 
+poetry config virtualenvs.in-project true
 # create virtual env
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirement.txt
+poetry install
+# activate the env
+poetry shell
 ```
 Then you are ready to launch it!
 
-# To run
-Execute simply the script by
+## To run
+Just type in the terminal:
 ```
-python script.py
+poetry run script
 ```
 
-# Example
+## To execute tests
+Just type in the terminal:
+```
+poetry run pytest
+```
+
+## Example
 An example of the parser can be resumed here with this log:
 ```text
 Initial address is: 100 Rue Chapelle
@@ -33,7 +51,7 @@ Unparsed string remained is:
 Parse quality scored: 1.0
 ```
 
-# To-Do List
+## To-Do List
 - [x] Publish in git
 - [ ] Clean structure (use maybe poetry)
 - [ ] Create a simple init graphic
