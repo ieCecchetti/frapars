@@ -55,6 +55,7 @@ The script runned with `poetry run script` can execute in 3 different ways:
 
 ### Single address
 with the command:
+
 `poetry run script -a "Rue, Saint-Philippe 31 (De)"`
 ```text
 Fra-parse 0.2.0
@@ -69,6 +70,7 @@ Process has finished!
 
 ### List of addresses
 with the command:
+
 `poetry run script -l "Rue, Saint-Philippe 31 (De); Saint Marcelle (De) Avenue 32 10141"`
 ```text
 Fra-parse 0.2.0
@@ -81,7 +83,8 @@ Process has finished!
 
 ### File conversion
 with the command:
-`poetry run script -i "Rue, Saint-Philippe 31 (De); Saint Marcelle (De) Avenue 32 10141"`
+
+`poetry run script -i "poetry run script -i "your/file/path/filename.csv"`
 Fra-parse 0.2.0
 Developed by eCecchetti
 Found 234253 addresses to parse
