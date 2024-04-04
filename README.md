@@ -3,14 +3,14 @@ Simple script that permits to parse addresses in France format.
 
 ## Install
 To install, from the main proj folder, follows this steps:
-1. Visit the Poetry website to download the installer for your operating system.
+1. Visit the [Poetry website](https://python-poetry.org/) to download the installer for your operating system.
 2. Run the installer according to the instructions provided for your operating system.
 3. After installation, verify that Poetry is installed correctly by opening a terminal or command prompt and typing:
 ```
 poetry --version
 ```
 This command should display the installed version of Poetry.
-For more detailed installation instructions and usage guidelines, refer to the Poetry documentation.
+For more detailed installation instructions and usage guidelines, refer to the [Poetry Installation Guide](https://python-poetry.org/docs/).
 
 Then for installing the project:
 ```bash
