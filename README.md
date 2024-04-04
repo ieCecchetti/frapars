@@ -1,4 +1,4 @@
-# FRA-P-RS (Franc-parse-addresses)
+# FRA-P-RS (France-parse-addresses)
 Simple script that permits to parse addresses in France format.
 
 ## Install
