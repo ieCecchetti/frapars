@@ -104,12 +104,12 @@ if __name__ == "__main__":
     print("Welcome to Fra-pars")
     df = pd.read_csv(in_file_path, dtype='str', encoding='latin-1')
     df = df.dropna()
-    csv_addr_list = list(df['address'])
+    # TODO: remove the limit
+    csv_addr_list = list(df['address'])[:1000]
     print(f"Found {len(csv_addr_list)} addresses to parse")
     results = []
     i = 0
-    # TODO: remove the limit
-    for address in tqdm(csv_addr_list[:1000], desc="Processing", unit="item"):
+    for address in tqdm(csv_addr_list, desc="Processing", unit="item"):
         parsed_address = parse(address, verbose=False)
         results.append({
             'original':  address,

@@ -1,4 +1,4 @@
-# FRA-P-ADRS
+# FRA-P-RS (Franc-parse-addresses)
 Simple script that permits to parse addresses in France format.
 
 # Install
@@ -34,7 +34,7 @@ Parse quality scored: 1.0
 ```
 
 # To-Do List
-- [ ] Publish in git
+- [x] Publish in git
 - [ ] Clean structure (use maybe poetry)
 - [ ] Create a simple init graphic
 - [ ] Add args and helper: [`single_address`, `csv`]
