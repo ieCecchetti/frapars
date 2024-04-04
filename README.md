@@ -53,7 +53,7 @@ Parse quality scored: 1.0
 
 ## To-Do List
 - [x] Publish in git
-- [ ] Clean structure (use maybe poetry)
+- [x] Clean structure (use maybe poetry)
 - [ ] Create a simple init graphic
 - [ ] Add args and helper: [`single_address`, `csv`]
 - [ ] Split the csv in piece and execute in more thread  (to fasten up)
