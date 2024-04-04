@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "frapars"
+version = "0.1.0"
+description = "Simple script that permits to parse addresses in France format."
+authors = ["Enrico Cecchetti <enrico.cecchetti@kcitylabs.fr>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/ieCecchetti/frapars"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.31.0"
+pandas = "^2.2.1"
+ptvsd = "^4.3.2"
+tqdm = "^4.66.2"
+pytest = "^8.1.1"
+
+[tool.poetry.scripts]
+script = "frapars.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

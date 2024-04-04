@@ -100,7 +100,7 @@ def parse_single_address(address_str, verbose=False):
     return parsed_address.strip()
 
 
-if __name__ == "__main__":
+def main():
     print("Welcome to Fra-pars")
     df = pd.read_csv(in_file_path, dtype='str', encoding='latin-1')
     df = df.dropna()
@@ -124,3 +124,7 @@ if __name__ == "__main__":
         writer.writerows(results)
 
     print(f"Process has finished!")
+
+
+if __name__ == "__main__":
+    main()
