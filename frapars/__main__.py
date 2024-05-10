@@ -1,6 +1,6 @@
 import pandas as pd
 import csv
-from frapars.functions.addresses import parse_all_parallel, parse
+from frapars.functions.addresses import parse_all_parallel, parse_all, parse
 from frapars.constants import out_file_path as out_csv
 import importlib.metadata
 import argparse
