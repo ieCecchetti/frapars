@@ -1,6 +1,8 @@
 import re
 from frapars.functions import clean_str
 import frapars.constants.regex as rx
+from tqdm import tqdm
+from typing import List
 
 
 def score_percentage(text):
@@ -32,14 +34,74 @@ def format_details(address_info):
     return address_str.title()
 
 
-def parse(addresses_str, verbose=False):
+def parse_all(addresses_list: List, verbose=False):
+    """Parse a list of addresses address. The addresses can be still be formed by more addresses inside. (by mistake)
+     Like: 15 rue saint philippe ; 13 rue 4 march
+
+     Args:
+         addresses_list (List): list of addresses
+         verbose (bool, optional): if you want some more debug logs. Defaults to False.
+
+     Returns:
+         List: the list of parsed
+     """
+    parsed_addresses = []
+    for address in tqdm(addresses_list, desc="Processing", unit="item"):
+        parsed_addresses.append(parse(address))
+    return parsed_addresses
+
+
+def parse_all_parallel(addresses_list: List, n_threads=4, verbose=False):
+    """Parse a list of addresses address. The addresses can be still be formed by more addresses inside. (by mistake)
+    Like: 15 rue saint philippe ; 13 rue 4 march
+
+    Args:
+        addresses_list (List): list of addresses
+        verbose (bool, optional): if you want some more debug logs. Defaults to False.
+
+    Returns:
+        List: the list of parsed
+    """
+    parsed_addresses = []
+
+    # Split the addresses list into sublists
+    sublists = [addresses_list[i:i + len(addresses_list) // n_threads] for i in range(
+        0, len(addresses_list), len(addresses_list) // n_threads)]
+
+    # Define the function to process a sublist
+    def process_sublist(sublist):
+        return [parse(address) for address in tqdm(sublist, desc="Processing", unit="item")]
+
+    # Use ThreadPoolExecutor to process sublists in parallel
+    with ThreadPoolExecutor(max_workers=n_threads) as executor:
+        results = executor.map(process_sublist, sublists)
+
+    # Flatten the results
+    for result in results:
+        parsed_addresses.extend(result)
+
+    return parsed_addresses
+
+
+def parse(addresses_str, sep='et', verbose=False):
+    """Parse an address. The address can still be formed by more addresses inside. (by mistake) 
+    Like: 15 rue saint philippe ; 13 rue 4 march
+
+    Args:
+        addresses_str (_type_): address location
+        sep (str, optional): char, symbol or sequence of char that  we want as a separator for the final addresses. Defaults to 'et'.
+        verbose (bool, optional): Show logs of the process. Defaults to False.
+
+    Returns:
+        _type_: parsed single address
+    """
     parsed_addresses = []
     # there can be multiple str
     addresses = re.split(r';|et', addresses_str)
     for address_str in addresses:
         address_str = address_str.strip()
         parsed_addresses.append(parse_single_address(address_str, verbose))
-    return ' et '.join(parsed_addresses)
+    return f' {sep} '.join(parsed_addresses)
 
 
 def parse_single_address(address_str, verbose=False):

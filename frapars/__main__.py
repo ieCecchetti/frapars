@@ -1,7 +1,6 @@
 import pandas as pd
 import csv
-from tqdm import tqdm
-from frapars.functions.addresses import parse, parse_single_address
+from frapars.functions.addresses import parse_all_parallel, parse
 from frapars.constants import out_file_path as out_csv
 import importlib.metadata
 import argparse
@@ -33,17 +32,15 @@ def csv_from_dict(file_path, data):
 def parse_from_file(in_file_path, out_file_path, limit=None):
     df = pd.read_csv(in_file_path, dtype='str', encoding='latin-1')
     df = df.dropna()
-    # TODO: remove the limit
     if limit:
         csv_addr_list = list(df['address'])[:limit]
     else:
         csv_addr_list = list(df['address'])
 
     print(f"Found {len(csv_addr_list)} addresses to parse")
-    results = []
+    results = parse_all_parallel(csv_addr_list)
     i = 0
-    for address in tqdm(csv_addr_list, desc="Processing", unit="item"):
-        parsed_address = parse(address, verbose=False)
+    for address, parsed_address in zip(results, csv_addr_list):
         results.append({
             'original':  address,
             'parsed':  parsed_address,
@@ -56,16 +53,15 @@ def parse_from_file(in_file_path, out_file_path, limit=None):
 def parse_from_list(list_of_addresses):
     #  split the addresses
     addresses = list_of_addresses.split(';')
-    parsed_address = []
-    for address in tqdm(addresses, desc="Processing", unit="item"):
-        parsed_address.append(parse(address))
+
     # Print each value as list
-    for ua, pa in zip(addresses, parsed_address):
+    result = parse_all(addresses)
+    for ua, pa in zip(addresses, result):
         print(f"Unparsed: {ua} --> Parsed: {pa}")
 
 
-def parse_from_address(address):
-    parse_single_address(address, verbose=True)
+def parse_from_address(address_str):
+    parse(address_str, verbose=True)
 
 
 def main():
