@@ -14,9 +14,10 @@ pandas = "^2.2.1"
 ptvsd = "^4.3.2"
 tqdm = "^4.66.2"
 pytest = "^8.1.1"
+chardet = "^5.2.0"
 
 [tool.poetry.scripts]
-script = "frapars.__main__:main"
+script = "frapars.main:main"
 
 [build-system]
 requires = ["poetry-core"]

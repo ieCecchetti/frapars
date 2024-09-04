@@ -102,7 +102,7 @@ Process has finished!
 
 with the command:
 
-`poetry run script -i "poetry run script -i "your/file/path/filename.csv"`
+`poetry run script -i "your/file/path/filename.csv"`
 
 ```text
 Fra-parse 0.2.0
@@ -125,3 +125,6 @@ Process has finished!
 - [ ] Create package for pypi to be imported
 - [ ] Dockerize ?
 - [ ] Re-download the insee.csv when is old (every month)
+- [ ] Remove Lieu dit
+- [ ] (10 à 16, rue) -> 10-16
+- [ ] Make possible custo formatting or method for formatting to pass

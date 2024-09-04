@@ -23,8 +23,10 @@ postal_insee_code_pattern = re.compile(r'\b\d{5}\b')
 # Regular expression for capturing address numbers, including possible variations like "bis," "b," "a," etc.,
 
 
+import re
+
 address_num_pattern = re.compile(
-    r'\b(\d+(?: bis|Bis|BIS)?(?:/\d+)?[a-zA-Z]*(?:-\d+)?)\b')
+    r'\b(\d+(?:\s?à\s?\d+|\s?-\s?\d+)?(?: bis|Bis|BIS)?(?:/\d+)?[a-zA-Z]*(?:-\d+)?)\b')
 
 
 # Regular expression pattern to match cities

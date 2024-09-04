@@ -3,6 +3,8 @@ from frapars.functions import clean_str
 import frapars.constants.regex as rx
 from tqdm import tqdm
 from typing import List
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from frapars.models.address_result import AddressResult 
 
 
 def score_percentage(text):
@@ -50,35 +52,49 @@ def parse_all(addresses_list: List, verbose=False):
         parsed_addresses.append(parse(address))
     return parsed_addresses
 
+def process_batch(batch_with_indices: List[tuple]) -> List[tuple]:
+    """Process a batch of addresses and return results with their original indices."""
+    batch_indices, batch = zip(*batch_with_indices)
+    parsed_batch = [AddressResult(address, parse(address)) for address in tqdm(batch, desc="Processing batch", unit="item")]
+    return list(zip(batch_indices, parsed_batch))
 
-def parse_all_parallel(addresses_list: List, n_threads=4, verbose=False):
-    """Parse a list of addresses address. The addresses can be still be formed by more addresses inside. (by mistake)
-    Like: 15 rue saint philippe ; 13 rue 4 march
 
+def parse_all_parallel(addresses_list: List[str], batch_size=5000, n_threads=6, verbose=False) -> List[dict]:
+    """Parse a large list of addresses in batches, processing up to n_threads batches concurrently.
+    
     Args:
-        addresses_list (List): list of addresses
-        verbose (bool, optional): if you want some more debug logs. Defaults to False.
-
+        addresses_list (List[str]): List of addresses to be parsed.
+        batch_size (int): Number of addresses per batch.
+        n_threads (int): Number of threads to use for batch processing.
+        verbose (bool, optional): If you want some more debug logs. Defaults to False.
+        
     Returns:
-        List: the list of parsed
+        List[dict]: List of parsed addresses in the same order as input.
     """
-    parsed_addresses = []
+    # Create indexed batches
+    print(f"Setting up {n_threads} threads to process {len(addresses_list)} addresses in batches of {batch_size}...")
+    indexed_addresses = list(enumerate(addresses_list))
+    batches = [indexed_addresses[i:i + batch_size] for i in range(0, len(indexed_addresses), batch_size)]
+    
+    parsed_addresses = [None] * len(addresses_list)
 
-    # Split the addresses list into sublists
-    sublists = [addresses_list[i:i + len(addresses_list) // n_threads] for i in range(
-        0, len(addresses_list), len(addresses_list) // n_threads)]
+    def process_batch_and_collect(batch_with_indices: List[tuple]) -> List[tuple]:
+        """Process a batch and collect the results with their original indices."""
+        return process_batch(batch_with_indices)
 
-    # Define the function to process a sublist
-    def process_sublist(sublist):
-        return [parse(address) for address in tqdm(sublist, desc="Processing", unit="item")]
-
-    # Use ThreadPoolExecutor to process sublists in parallel
+    # Use ThreadPoolExecutor to process batches concurrently
     with ThreadPoolExecutor(max_workers=n_threads) as executor:
-        results = executor.map(process_sublist, sublists)
+        futures = [executor.submit(process_batch_and_collect, batch) for batch in batches]
 
-    # Flatten the results
-    for result in results:
-        parsed_addresses.extend(result)
+        for future in as_completed(futures):
+            try:
+                # Collect results and place them in the correct order
+                results_with_indices = future.result()
+                for index, parsed_address in results_with_indices:
+                    parsed_addresses[index] = parsed_address
+            except Exception as e:
+                if verbose:
+                    print(f"An error occurred: {e}")
 
     return parsed_addresses
 
