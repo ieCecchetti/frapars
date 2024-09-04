@@ -1,3 +1,9 @@
+# other 
+.DS_Store
+*.log
+frapars/res/parsed_addresses.csv
+frapars/res/sample_addresses.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
