@@ -1,10 +1,11 @@
 import pandas as pd
+import chardet
 import csv
-from tqdm import tqdm
-from frapars.functions.addresses import parse, parse_single_address
-from frapars.constants import out_file_path as out_csv
+from frapars.functions.addresses import parse_all_parallel, parse_all, parse
+from frapars.constants import out_file_path as out_csv_path
 import importlib.metadata
 import argparse
+import time
 # import ptvsd
 
 version = importlib.metadata.version('frapars')
@@ -24,51 +25,44 @@ def csv_from_dict(file_path, data):
     print(f"Storing into file the results")
     # Write the list of dictionaries to a CSV file
     with open(file_path, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=list(data[0].keys()))
+        writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
         writer.writeheader()
         writer.writerows(data)
     print("Result printed at: ", file_path)
 
 
-def parse_from_file(in_file_path, out_file_path, limit=None):
-    df = pd.read_csv(in_file_path, dtype='str', encoding='latin-1')
+def parse_from_file(in_file_path, limit=None):
+    # Read the file in binary mode
+    with open(in_file_path, 'rb') as file:
+        raw_data = file.read()
+    # Detect the encoding
+    print("Examin input file ...")
+    result = chardet.detect(raw_data)
+    print(f"Detected encoding: {result['encoding']} with confidence {result['confidence']}")
+    df = pd.read_csv(in_file_path, dtype='str', encoding=result['encoding'] if result['confidence'] > 0.7 else 'utf-8')
     df = df.dropna()
-    # TODO: remove the limit
     if limit:
         csv_addr_list = list(df['address'])[:limit]
     else:
         csv_addr_list = list(df['address'])
 
     print(f"Found {len(csv_addr_list)} addresses to parse")
-    results = []
-    i = 0
-    for address in tqdm(csv_addr_list, desc="Processing", unit="item"):
-        parsed_address = parse(address, verbose=False)
-        results.append({
-            'original':  address,
-            'parsed':  parsed_address,
-        })
-        i += 1
-    #  store in the file the data collected
-    csv_from_dict(out_file_path, results)
+    return parse_all_parallel(csv_addr_list)
 
 
 def parse_from_list(list_of_addresses):
     #  split the addresses
     addresses = list_of_addresses.split(';')
-    parsed_address = []
-    for address in tqdm(addresses, desc="Processing", unit="item"):
-        parsed_address.append(parse(address))
     # Print each value as list
-    for ua, pa in zip(addresses, parsed_address):
-        print(f"Unparsed: {ua} --> Parsed: {pa}")
+    return parse_all_parallel(addresses)
 
 
-def parse_from_address(address):
-    parse_single_address(address, verbose=True)
+def parse_from_address(address_str):
+    parse(address_str, verbose=True)
 
 
 def main():
+    start_time = time.time()
     print_banner()
     # Create the argument parser
     parser = argparse.ArgumentParser(description='Example Argument Parser')
@@ -82,19 +76,34 @@ def main():
                              help='List of inputs. Needs to be on format "rue saint-Philippe 31; Aevenue Carlos (De) 31"')
     input_group.add_argument('-a', '--address', type=str,
                              help='Single input address. Ex: "rue saint-Philippe 31 (De)"')
+    input_group.add_argument('-o', '--output', type=str,
+                             choices=['show', 'file'],
+                             default='show',
+                             help='Output option. Choose "show" to display the result or "file" to store it in a file')
 
     # Parse the arguments
     args = parser.parse_args()
 
     # Execute based on the input arg
     if args.input_file:
-        parse_from_file(args.input_file, out_csv)
+        result = parse_from_file(args.input_file)
     if args.list:
-        parse_from_list(args.list)
+        print(args.list)
+        result = parse_from_list(args.list)
     if args.address:
-        parse_from_address(args.address)
+        result = parse_from_address(args.address)
 
-    print(f"Process has finished!")
+    if args.output == 'file':
+        results = [res.to_dict() for res in  result]
+        #  store in the file the data collected
+        csv_from_dict(out_csv_path, results)
+    else:
+        for entry in result:
+            print(f"Raw: {entry.raw} --> Formatted: {entry.formatted}")
+
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Process has finished in: {execution_time} seconds")
 
 
 if __name__ == "__main__":

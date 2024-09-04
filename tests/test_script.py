@@ -1,4 +1,4 @@
-from frapars.__main__ import parse, parse_single_address
+from frapars.main import parse, parse_single_address
 
 # ptvsd.enable_attach(address=('localhost', 5678))
 # ptvsd.wait_for_attach()

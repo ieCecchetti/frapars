@@ -1,4 +1,4 @@
-urban_names = ["rue", "avenue", "place", "allée",
+urban_names = ["grand rue", "rue", "av", "avenue", "place", "allée", "déviation", "RN", "Lieu Dit",
                "allee", "chemin", "impasse", "boulevard", "quai", "promenade", "route", "passage", "voie", "avenue", "cours", ]
 
 # keeps the longer as priority
