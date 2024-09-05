@@ -25,9 +25,5 @@ def parse_insee_file():
     cities_list = nom_commune_list.union(ligne_5_list)
     sorted_cities_list = sorted(
         cities_list, key=lambda x: len(x), reverse=True)
-    # print(f"Insee list own #{len(insee_list)} values.")
-    # print(f"Postcode list own #{len(postcode_list)} values.")
-    # print(
-    #     f"Common codes list own #{len(insee_list.intersection(postcode_list))} values.")
 
     return sorted_insee_list, sorted_postcode_list, sorted_cities_list

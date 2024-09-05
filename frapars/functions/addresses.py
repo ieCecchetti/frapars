@@ -5,6 +5,7 @@ from tqdm import tqdm
 from typing import List
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from frapars.models.address_result import AddressResult 
+import logging
 
 
 def score_percentage(text):
@@ -36,14 +37,12 @@ def format_details(address_info):
     return address_str.title()
 
 
-def parse_all(addresses_list: List, verbose=False):
+def parse_all(addresses_list: List[str]):
     """Parse a list of addresses address. The addresses can be still be formed by more addresses inside. (by mistake)
      Like: 15 rue saint philippe ; 13 rue 4 march
 
      Args:
          addresses_list (List): list of addresses
-         verbose (bool, optional): if you want some more debug logs. Defaults to False.
-
      Returns:
          List: the list of parsed
      """
@@ -59,20 +58,19 @@ def process_batch(batch_with_indices: List[tuple]) -> List[tuple]:
     return list(zip(batch_indices, parsed_batch))
 
 
-def parse_all_parallel(addresses_list: List[str], batch_size=5000, n_threads=6, verbose=False) -> List[dict]:
+def parse_all_parallel(addresses_list: List[str], batch_size=5000, n_threads=6) -> List[dict]:
     """Parse a large list of addresses in batches, processing up to n_threads batches concurrently.
     
     Args:
         addresses_list (List[str]): List of addresses to be parsed.
         batch_size (int): Number of addresses per batch.
         n_threads (int): Number of threads to use for batch processing.
-        verbose (bool, optional): If you want some more debug logs. Defaults to False.
         
     Returns:
         List[dict]: List of parsed addresses in the same order as input.
     """
     # Create indexed batches
-    print(f"Setting up {n_threads} threads to process {len(addresses_list)} addresses in batches of {batch_size}...")
+    logging.debug(f"Setting up {n_threads} threads to process {len(addresses_list)} addresses in batches of {batch_size}...")
     indexed_addresses = list(enumerate(addresses_list))
     batches = [indexed_addresses[i:i + batch_size] for i in range(0, len(indexed_addresses), batch_size)]
     
@@ -93,20 +91,18 @@ def parse_all_parallel(addresses_list: List[str], batch_size=5000, n_threads=6, 
                 for index, parsed_address in results_with_indices:
                     parsed_addresses[index] = parsed_address
             except Exception as e:
-                if verbose:
-                    print(f"An error occurred: {e}")
+                logging.error(f"An error occurred: {e}")
 
     return parsed_addresses
 
 
-def parse(addresses_str, sep='et', verbose=False):
+def parse(addresses_str, sep='et'):
     """Parse an address. The address can still be formed by more addresses inside. (by mistake) 
     Like: 15 rue saint philippe ; 13 rue 4 march
 
     Args:
         addresses_str (_type_): address location
         sep (str, optional): char, symbol or sequence of char that  we want as a separator for the final addresses. Defaults to 'et'.
-        verbose (bool, optional): Show logs of the process. Defaults to False.
 
     Returns:
         _type_: parsed single address
@@ -116,13 +112,12 @@ def parse(addresses_str, sep='et', verbose=False):
     addresses = re.split(r';|et', addresses_str)
     for address_str in addresses:
         address_str = address_str.strip()
-        parsed_addresses.append(parse_single_address(address_str, verbose))
+        parsed_addresses.append(parse_single_address(address_str))
     return f' {sep} '.join(parsed_addresses)
 
 
-def parse_single_address(address_str, verbose=False):
-    if verbose:
-        print(f"Initial address is: {address_str}")
+def parse_single_address(address_str):
+    logging.debug(f"Initial address is: {address_str}")
     addr_details = {}
     norm_address = clean_str.normalize_text(address_str)
 
@@ -165,9 +160,8 @@ def parse_single_address(address_str, verbose=False):
     addr_details['street_name'].extend(date_streets)
 
     parsed_address = format_details(addr_details)
-    if verbose:
-        print(f"Result is: {parsed_address}")
-        print(f"Details: {addr_details}")
-        print(f"Unparsed string remained is: {norm_address}")
-        print(f"Parse quality scored: {score_percentage(norm_address)}")
+    logging.debug(f"Result is: {parsed_address}")
+    logging.debug(f"Details: {addr_details}")
+    logging.debug(f"Unparsed string remained is: {norm_address}")
+    logging.debug(f"Parse quality scored: {score_percentage(norm_address)}")
     return parsed_address.strip()

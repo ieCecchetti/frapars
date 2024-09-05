@@ -58,7 +58,7 @@ def parse_from_list(list_of_addresses):
 
 
 def parse_from_address(address_str):
-    parse(address_str, verbose=True)
+    parse(address_str)
 
 
 def main():

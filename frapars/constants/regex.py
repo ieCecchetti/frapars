@@ -3,11 +3,12 @@ import re
 from frapars.constants.words import *
 from frapars.constants.france_deps import get_deps
 from frapars.functions.file_parser import parse_insee_file
+import logging
 
-print("Initializing data for the parse")
+logging.debug("Initializing data for the parse")
 insee_list, postcode_list, city_list = parse_insee_file()
 
-print("Compiling usefull regexes")
+logging.debug("Compiling usefull regexes")
 special_chars_with_apostrophe = r'[^a-zA-Z0-9\s\']'
 
 # Define regex patterns for urban names
