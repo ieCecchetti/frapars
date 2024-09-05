@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "frapars"
-version = "0.2.0"
+version = "0.2.1"
 description = "Simple script that permits to parse addresses in France format."
 authors = ["Enrico Cecchetti <enrico.cecchetti@kcitylabs.fr>"]
 license = "MIT"
