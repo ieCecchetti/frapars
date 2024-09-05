@@ -1,31 +1,12 @@
-import os
 import pandas as pd
-import requests
 import frapars.constants as const
-
-# TODO: add force download if 1moth is passed
-
-
-def _read_file(url):
-    return pd.read_csv(url, delimiter=';', dtype='str', encoding='latin1')
-
+import importlib.resources as pkg_resources
+import frapars.data
 
 def get_insee_file():
-    if os.path.exists(const.insee_path):
-        # Load the existing CSV file
-        return _read_file(const.insee_path)
-    else:
-        # Download the CSV file from the URL
-        response = requests.get(const.insee_url)
-        if response.status_code == 200:
-            # Save the downloaded file
-            with open(const.insee_path, 'wb') as file:
-                file.write(response.content)
-            # Load the CSV file into a DataFrame
-            return _read_file(const.insee_path)
-        else:
-            print("Failed to download the file:", response.status_code)
-            return None
+    # Use importlib.resources to open the CSV file as a resource
+    with pkg_resources.open_text(frapars.data, 'insee_file.csv') as file:
+        return pd.read_csv(file, delimiter=';', dtype='str', encoding='latin1')
 
 
 def parse_insee_file():

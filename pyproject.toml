@@ -13,8 +13,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers"
 ]
-packages = [{include = "frapars"}]
 
+include = [
+    "frapars/data/insee_file.csv"
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
