@@ -20,10 +20,10 @@ def score_percentage(text):
 
 
 def format_details(address_info):
-    address_str = "{} {} {} {} {} {} {} {} {}".format(
+    logging.debug(f"Formatting address details: {address_info}")
+    address_str = "{} {} {} {} {} {} {} {}".format(
         (' ').join(address_info.get('addres_num', '')),
         (' ').join(address_info.get('urba_names', '')),
-        (' ').join(address_info.get('prepositions', '')),
         (' ').join(address_info.get('street_name', '')),
         (' ').join(address_info.get('city', '')),
         (' ').join(address_info.get('postcode', '')),
@@ -109,7 +109,7 @@ def parse(addresses_str, sep='et'):
     """
     parsed_addresses = []
     # there can be multiple str
-    addresses = re.split(r';|et', addresses_str)
+    addresses = re.split(r';|\b\s*et\s*\b', addresses_str)
     for address_str in addresses:
         address_str = address_str.strip()
         parsed_addresses.append(parse_single_address(address_str))
@@ -119,28 +119,25 @@ def parse(addresses_str, sep='et'):
 def parse_single_address(address_str):
     logging.debug(f"Initial address is: {address_str}")
     addr_details = {}
-    norm_address = clean_str.normalize_text(address_str)
+    # norm_address = clean_str.normalize_text(address_str)
+    norm_address = address_str.lower()
 
     # Find all matches for urban names using the compiled pattern
     addr_details['urba_names'], norm_address = rx.exec(
-        rx.urban_names_pattern, norm_address)
-
-    # Find all matches for preposition using the compiled pattern
-    addr_details['prepositions'], norm_address = rx.exec(
-        rx.prepositions_pattern, norm_address)
+        rx.urban_names_pattern, norm_address, 'urban names')
     norm_address = norm_address.replace('()', '')
 
     # Find all matches for city using the compiled pattern
     date_streets, norm_address = rx.exec(
-        rx.date_pattern, norm_address)
+        rx.date_pattern, norm_address, 'date streets')
 
     # Find all matches for city using the compiled pattern
     addr_details['city'], norm_address = rx.exec(
-        rx.city_pattern, norm_address)
+        rx.city_pattern, norm_address, 'city')
 
     # Find all matches for postcode using the compiled pattern
     codes, norm_address = rx.exec(
-        rx.postal_insee_code_pattern, norm_address)
+        rx.postal_insee_code_pattern, norm_address, 'codes')
     # find the category of the insee
     if len(codes):
         addr_details['insee'], addr_details['postcode'], addr_details['codes'] = rx.parse_codes(
@@ -148,15 +145,15 @@ def parse_single_address(address_str):
 
     # Find all matches for address number using the compiled pattern
     addr_details['addres_num'], norm_address = rx.exec(
-        rx.address_num_pattern, norm_address)
+        rx.address_num_pattern, norm_address, 'address number')
 
     # Find all matches for address_num using the compiled pattern
     addr_details['department'], norm_address = rx.exec(
-        rx.department_pattern, norm_address)
+        rx.department_pattern, norm_address, 'department')
 
     # Handle the rest
     addr_details['street_name'], norm_address = rx.exec(
-        rx.street_name_pattern, norm_address)
+        rx.street_name_pattern, norm_address, 'street name')
     addr_details['street_name'].extend(date_streets)
 
     parsed_address = format_details(addr_details)

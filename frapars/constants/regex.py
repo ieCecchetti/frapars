@@ -1,6 +1,6 @@
 
 import re
-from frapars.constants.words import *
+from frapars.constants.words import prepositions, urban_type, months
 from frapars.constants.france_deps import get_deps
 from frapars.functions.file_parser import parse_insee_file
 import logging
@@ -11,23 +11,26 @@ insee_list, postcode_list, city_list = parse_insee_file()
 logging.debug("Compiling usefull regexes")
 special_chars_with_apostrophe = r'[^a-zA-Z0-9\s\']'
 
-# Define regex patterns for urban names
+# Sort by length to prioritize longer matches
+urba_type_sorted = sorted(urban_type, key=len, reverse=True)
+prepositions_sorted = sorted(prepositions, key=len, reverse=True)
+# Create the regex pattern 
+urba_type_pattern = "|".join(map(re.escape, urba_type_sorted))
+prepositions_pattern = "|".join(map(re.escape, prepositions_sorted))
+# Combine the urba_type with optional prepositions
 urban_names_pattern = re.compile(
-    r'\b(?:' + '|'.join(map(re.escape, urban_names)) + r')\b', flags=re.IGNORECASE)
+    rf"\b(?:{urba_type_pattern})(?:\s+(?:{prepositions_pattern}))?\b", flags=re.IGNORECASE)
 
-# Define regex patterns for prepositions
-prepositions_pattern = re.compile(
-    r'(?<![a-zA-Z0-9])' + r'(?:' + '|'.join(map(re.escape, prepositions)) + r')\'?' + r'(?![a-zA-Z0-9])', flags=re.IGNORECASE)
 # Define a regular expression pattern to match five consecutive digits
-
 postal_insee_code_pattern = re.compile(r'\b\d{5}\b')
+
 # Regular expression for capturing address numbers, including possible variations like "bis," "b," "a," etc.,
-
-
-import re
-
+# address_num_pattern = re.compile(
+#     r'\b(\d+(?:\s?-\s?\d+|\s?à\s?\d+)?(?:\s?(?:bis|Bis|BIS))?(?:/\d+)?[a-zA-Z]?)\b'
+# )
 address_num_pattern = re.compile(
-    r'\b(\d+(?:\s?à\s?\d+|\s?-\s?\d+)?(?: bis|Bis|BIS)?(?:/\d+)?[a-zA-Z]*(?:-\d+)?)\b')
+    r'\b\d+(?:\s?[-à]\s?\d+)?(?:\s?bis)?(?:/\d+)?[a-zA-Z]?\b'
+)
 
 
 # Regular expression pattern to match cities
@@ -61,12 +64,17 @@ def parse_codes(codes):
     return insee, postcode, unknow
 
 
-def exec(pattern, text):
-    # Find all departments in the input string
-    results = pattern.findall(text)
-    # Find all matches and remove them from the text
-    remaining_text, _ = re.subn(pattern, '', text)
-    # Replace multiple spaces with a single space
-    remaining_cleaned_text = re.sub(r'\s+', ' ', remaining_text)
-    # return the items found and the cleaned str
-    return results, remaining_cleaned_text.strip()
+def exec(pattern, text, lable=None):
+    try:
+        logging.debug(f"Examining {text}. Looking for {lable}")
+        # Find all departments in the input string
+        results = pattern.findall(text)
+        # Find all matches and remove them from the text
+        remaining_text, _ = re.subn(pattern, '', text)
+        # Replace multiple spaces with a single space
+        remaining_cleaned_text = re.sub(r'\s+', ' ', remaining_text)
+        # return the items found and the cleaned str
+        return results, remaining_cleaned_text.strip()
+    except Exception as e:
+        logging.error(f"Error in parsing: {text}. Caused by: {e}")
+        return [], text

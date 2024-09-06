@@ -6,9 +6,11 @@ from frapars.constants import out_file_path as out_csv_path
 import importlib.metadata
 import argparse
 import time
+import logging
 # import ptvsd
 
 version = importlib.metadata.version('frapars')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def print_banner():
