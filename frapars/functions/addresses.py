@@ -63,7 +63,7 @@ def parse_all_parallel(addresses_list: List[str], batch_size=5000, n_threads=6, 
     return parsed_addresses
 
 
-def parse(addresses_str, formatter: Formatter= Formatter()):
+def parse(addresses_str, formatter: Formatter= Formatter()) -> List[dict]:
     """Parse an address. The address can still be formed by more addresses inside. (by mistake) 
     Like: 15 rue saint philippe ; 13 rue 4 march
 
@@ -98,7 +98,8 @@ def parse_single_address(address_str, formatter: Formatter= Formatter()):
     # Check if urba_type is not empty and add it to addr_details
     addr_details['urba_names'] = urba_type + urba_preposition
 
-    norm_address = norm_address.replace('(', '').replace(')', '')
+    # norm_address = norm_address.replace('(', '').replace(')', '')
+    norm_address = norm_address.replace('()', '')
 
     # Find all matches for city using the compiled pattern
     date_streets, norm_address = rx.exec(
