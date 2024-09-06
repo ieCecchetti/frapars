@@ -7,6 +7,7 @@ import importlib.metadata
 import argparse
 import time
 import logging
+from frapars.helper.formatter import Formatter, AddressFields
 # import ptvsd
 
 version = importlib.metadata.version('frapars')
@@ -59,8 +60,8 @@ def parse_from_list(list_of_addresses):
     return parse_all_parallel(addresses)
 
 
-def parse_from_address(address_str):
-    parse(address_str)
+def parse_from_address(address_str, formatter: Formatter= Formatter()):
+    return parse(address_str, formatter)
 
 
 def main():
@@ -89,19 +90,24 @@ def main():
     # Execute based on the input arg
     if args.input_file:
         result = parse_from_file(args.input_file)
-    if args.list:
-        print(args.list)
-        result = parse_from_list(args.list)
-    if args.address:
-        result = parse_from_address(args.address)
-
-    if args.output == 'file':
         results = [res.to_dict() for res in  result]
         #  store in the file the data collected
         csv_from_dict(out_csv_path, results)
-    else:
+    if args.list:
+        print(args.list)
+        result = parse_from_list(args.list)
         for entry in result:
             print(f"Raw: {entry.raw} --> Formatted: {entry.formatted}")
+
+    if args.address:
+        result = parse_from_address(
+            args.address, 
+            Formatter(
+            template=f"{AddressFields.ADDRESS_NUM.value} - {AddressFields.STREET_NAME.value} - {AddressFields.CITY.value}"
+            )
+        )
+        print(result)
+        
 
     end_time = time.time()
     execution_time = end_time - start_time

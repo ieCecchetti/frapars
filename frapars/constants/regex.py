@@ -11,15 +11,13 @@ insee_list, postcode_list, city_list = parse_insee_file()
 logging.debug("Compiling usefull regexes")
 special_chars_with_apostrophe = r'[^a-zA-Z0-9\s\']'
 
-# Sort by length to prioritize longer matches
-urba_type_sorted = sorted(urban_type, key=len, reverse=True)
-prepositions_sorted = sorted(prepositions, key=len, reverse=True)
-# Create the regex pattern 
-urba_type_pattern = "|".join(map(re.escape, urba_type_sorted))
-prepositions_pattern = "|".join(map(re.escape, prepositions_sorted))
-# Combine the urba_type with optional prepositions
-urban_names_pattern = re.compile(
-    rf"\b(?:{urba_type_pattern})(?:\s+(?:{prepositions_pattern}))?\b", flags=re.IGNORECASE)
+# Define prepositions and urba_type, making sure longer ones come first (sorted by length)
+urban_type_pattern = "|".join(map(re.escape, sorted(urban_type, key=len, reverse=True)))
+urba_prepositions = "|".join(map(re.escape, sorted(prepositions, key=len, reverse=True)))
+# Pattern to match text inside parentheses and optionally find prepositions inside them
+urban_type_pattern = re.compile(rf"\b(?:{urban_type_pattern})\b", flags=re.IGNORECASE)
+# Regex pattern to match prepositions inside parentheses
+urba_prepositions_pattern = re.compile(rf"\b({urba_prepositions})\b(?=[^)]*\))", flags=re.IGNORECASE)
 
 # Define a regular expression pattern to match five consecutive digits
 postal_insee_code_pattern = re.compile(r'\b\d{5}\b')
@@ -29,9 +27,7 @@ postal_insee_code_pattern = re.compile(r'\b\d{5}\b')
 #     r'\b(\d+(?:\s?-\s?\d+|\s?à\s?\d+)?(?:\s?(?:bis|Bis|BIS))?(?:/\d+)?[a-zA-Z]?)\b'
 # )
 address_num_pattern = re.compile(
-    r'\b\d+(?:\s?[-à]\s?\d+)?(?:\s?bis)?(?:/\d+)?[a-zA-Z]?\b'
-)
-
+    r'\b\d+(?:\s?[-à]\s?\d+)?(?:\s?bis)?(?:/\d+)?[a-zA-Z]?\b', flags=re.IGNORECASE)
 
 # Regular expression pattern to match cities
 city_pattern = re.compile(
