@@ -64,13 +64,13 @@ Unparsed string remained is:
 Parse quality scored: 1.0
 ```
 
-The script runned with `poetry run script` can execute in 3 different ways:
+The script runned with `poetry run dev` can execute in 3 different ways:
 
 ### Single address
 
 with the command:
 
-`poetry run script -a "Rue, Saint-Philippe 31 (De)"`
+`poetry run dev -a "Rue, Saint-Philippe 31 (De)"`
 
 ```text
 Fra-parse 0.2.0
@@ -87,7 +87,7 @@ Process has finished!
 
 with the command:
 
-`poetry run script -l "Rue, Saint-Philippe 31 (De); Saint Marcelle (De) Avenue 32 10141"`
+`poetry run dev -l "Rue, Saint-Philippe 31 (De); Saint Marcelle (De) Avenue 32 10141"`
 
 ```text
 Fra-parse 0.2.0
@@ -102,7 +102,7 @@ Process has finished!
 
 with the command:
 
-`poetry run script -i "your/file/path/filename.csv"`
+`poetry run dev -i "your/file/path/filename.csv"`
 
 ```text
 Fra-parse 0.2.0
