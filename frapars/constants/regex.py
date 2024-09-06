@@ -2,11 +2,11 @@
 import re
 from frapars.constants.words import prepositions, urban_type, months
 from frapars.constants.france_deps import get_deps
-from frapars.functions.file_parser import parse_insee_file
+from frapars.constants.insee import insee_list
+from frapars.constants.municipalities import city_list
+from frapars.constants.postcodes import postcode_list
 import logging
 
-logging.debug("Initializing data for the parse")
-insee_list, postcode_list, city_list = parse_insee_file()
 
 logging.debug("Compiling usefull regexes")
 special_chars_with_apostrophe = r'[^a-zA-Z0-9\s\']'

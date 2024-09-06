@@ -116,15 +116,8 @@ Process has finished!
 
 ## To-Do List
 
-- [x] Publish in git
-- [x] Clean structure (use maybe poetry)
-- [x] Create a simple init graphic
-- [x] Add args and helper: [`single_address`, `list_of_addresses`, `csv`]
-- [ ] Split the csv in piece and execute in more thread  (to fasten up)
 - [ ] Write junit tests
-- [ ] Create package for pypi to be imported
-- [ ] Dockerize ?
-- [ ] Re-download the insee.csv when is old (every month)
-- [ ] Remove Lieu dit
-- [ ] (10 à 16, rue) -> 10-16
-- [ ] Make possible custo formatting or method for formatting to pass
+- [ ] More example
+- [ ] Update insee file - create a task that do it 
+
+Enjoy and Rate!!
